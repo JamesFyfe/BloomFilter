@@ -20,9 +20,14 @@ int main(int argc, char *argv[]) {
 
     // read input image into data
 		unsigned char *image_data = get_image_data(input_image);
+		// TODO get width, height, num_components from input image
 
+		int width = 3600;
+		int height = 1800;
+		int num_components = 3;
     // TODO Apply the bloom filter
     // Save output image
-
+		save_output_image(image_data, output_image, width, height, num_components);
+		free(image_data);
     return 0;
 }
