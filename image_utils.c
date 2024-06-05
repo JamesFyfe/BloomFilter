@@ -4,7 +4,7 @@
 
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
-unsigned char* get_image_data(const char* input_filename) {
+unsigned char* get_image_data(const char* input_filename, int* width, int* height, int* num_components) {
     FILE *infile = fopen(input_filename, "rb");
     if (!infile) {
         fprintf(stderr, "Error opening input file\n");
@@ -21,17 +21,17 @@ unsigned char* get_image_data(const char* input_filename) {
     jpeg_read_header(&cinfo, TRUE);
     jpeg_start_decompress(&cinfo);
 
-    int width = cinfo.output_width;
-    int height = cinfo.output_height;
-    int num_components = cinfo.num_components;
+    *width = cinfo.output_width;
+    *height = cinfo.output_height;
+    *num_components = cinfo.num_components;
 
     // Allocate memory for pixel data
-    unsigned char *image_data = malloc(width * height * num_components);
+    unsigned char *image_data = malloc((*width) * (*height) * (*num_components));
 
     // Read pixel data into buffer
     while (cinfo.output_scanline < cinfo.output_height) {
         unsigned char *buffer_array[1];
-        buffer_array[0] = image_data + (cinfo.output_scanline) * width * num_components;
+        buffer_array[0] = image_data + (cinfo.output_scanline) * (*width) * (*num_components);
         jpeg_read_scanlines(&cinfo, buffer_array, 1);
     }
 
@@ -63,7 +63,7 @@ void save_output_image(unsigned char *image_data, const char* output_filename, i
     cinfo.in_color_space = JCS_RGB;
 
     jpeg_set_defaults(&cinfo);
-    int compression_quality = 90;
+    int compression_quality = 100;
     jpeg_set_quality(&cinfo, compression_quality, TRUE);
     jpeg_start_compress(&cinfo, TRUE);
 
@@ -94,6 +94,9 @@ void apply_bloom(unsigned char *image_data, int width, int height, int num_compo
             if (avg > threshold) {
                 for(int kh = -kernelSize; kh < kernelSize; kh++) {
                     for(int kw = -kernelSize; kw < kernelSize; kw++) {
+                        if(kh == 0 && kw == 0) {
+                            continue;
+                        }
                         int pixelLocation = ((h + kh) * width + w + kw) * num_components;
                         if(pixelLocation > height * width * num_components) {
                             // pixel is outside of image
@@ -104,7 +107,7 @@ void apply_bloom(unsigned char *image_data, int width, int height, int num_compo
                             // to make blur circular instead of square
                             continue;
                         }
-                        float bloomStrengthAtPixel = bloom_intensity / distance;
+                        float bloomStrengthAtPixel = bloom_intensity / 20.0 / distance;
                         bloom_data[pixelLocation] = MIN(bloom_data[pixelLocation] + r * bloomStrengthAtPixel, 255);
                         bloom_data[pixelLocation + 1] = MIN(bloom_data[pixelLocation + 1] + g * bloomStrengthAtPixel, 255);
                         bloom_data[pixelLocation + 2] = MIN(bloom_data[pixelLocation + 2] + b * bloomStrengthAtPixel, 255);

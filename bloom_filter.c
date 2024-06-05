@@ -4,31 +4,34 @@
 #include "image_utils.h"
 
 int main(int argc, char *argv[]) {
-    if (argc != 4) {
-        fprintf(stderr, "Usage: %s <input_image> <output_image> <bloom_intensity>\n", argv[0]);
+    if (argc != 6) {
+        fprintf(stderr, "Usage: %s <input_image> <output_image> <bloom_intensity> <kernel_size> <threshold>\n", argv[0]);
         return 1;
     }
 
     char *input_image = argv[1];
     char *output_image = argv[2];
-    float bloom_intensity = atof(argv[3]) / 5.0;
+    float bloom_intensity = atof(argv[3]);
+    int kernel_size = atoi(argv[4]);
+    float threshold = atof(argv[5]);
 
 		printf("Input image: %s\n", input_image);
     printf("Output image: %s\n", output_image);
-    printf("Bloom intensity: %.2f\n", bloom_intensity);
-		// TODO add kernel size and brightness threshold (0-1)
+    printf("Bloom intensity: %f\n", bloom_intensity);
+    printf("Kernel size: %d\n", kernel_size);
+    printf("Threshold: %f\n", threshold);
+
+		int width, height, num_components;
 
     // read input image into data
-		unsigned char *image_data = get_image_data(input_image);
-		// TODO get width, height, num_components from input image
+		unsigned char *image_data = get_image_data(input_image, &width, &height, &num_components);
+		
+		if (image_data == NULL) {
+			fprintf(stderr, "Failed to read input image\n");
+			return 1;
+		}
 
-		int width = 3600;
-		int height = 1800;
-		int num_components = 3;
-		float threshold = 0.6;
-		int kernelSize = 5;
-
-		apply_bloom(image_data, width, height, num_components, bloom_intensity, threshold, kernelSize);
+		apply_bloom(image_data, width, height, num_components, bloom_intensity, threshold, kernel_size);
 
     // Save output image
 		save_output_image(image_data, output_image, width, height, num_components);
