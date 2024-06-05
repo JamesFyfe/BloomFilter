@@ -53,3 +53,8 @@ dkms.conf
 
 # Image files
 images/
+
+bloom_filter
+.vscode/
+output.jpg
+.DS_Store
