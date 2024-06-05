@@ -78,7 +78,7 @@ void save_output_image(unsigned char *image_data, const char* output_filename, i
     fclose(outfile);
 }
 
-void apply_bloom(unsigned char *image_data, int width, int height, int num_components, float bloom_intensity, float threshold, int kernelSize) {
+void apply_bloom(unsigned char *image_data, int width, int height, int num_components, float bloom_intensity, float threshold, int kernel_radius) {
 
     // calculate bloom_data
     unsigned char *bloom_data = calloc(1, width * height * num_components);
@@ -92,8 +92,8 @@ void apply_bloom(unsigned char *image_data, int width, int height, int num_compo
             float avg = (r + g + b) / 765.0;
             
             if (avg > threshold) {
-                for(int kh = -kernelSize; kh < kernelSize; kh++) {
-                    for(int kw = -kernelSize; kw < kernelSize; kw++) {
+                for(int kh = -kernel_radius; kh <= kernel_radius; kh++) {
+                    for(int kw = -kernel_radius; kw <= kernel_radius; kw++) {
                         if(kh == 0 && kw == 0) {
                             continue;
                         }

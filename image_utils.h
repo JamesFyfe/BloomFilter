@@ -6,6 +6,6 @@
 
 unsigned char* get_image_data(const char* input_filename, int* width, int* height, int* num_components);
 void save_output_image(unsigned char *image_data, const char* output_filename, int width, int height, int num_components);
-void apply_bloom(unsigned char *image_data, int width, int height, int num_components, float bloom_intensity, float threshold, int kernelSize);
+void apply_bloom(unsigned char *image_data, int width, int height, int num_components, float bloom_intensity, float threshold, int kernel_radius);
 
 #endif

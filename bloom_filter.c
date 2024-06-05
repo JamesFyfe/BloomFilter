@@ -31,7 +31,8 @@ int main(int argc, char *argv[]) {
 			return 1;
 		}
 
-		apply_bloom(image_data, width, height, num_components, bloom_intensity, threshold, kernel_size);
+    int kernel_radius = kernel_size / 2;
+		apply_bloom(image_data, width, height, num_components, bloom_intensity, threshold, kernel_radius);
 
     // Save output image
 		save_output_image(image_data, output_image, width, height, num_components);
